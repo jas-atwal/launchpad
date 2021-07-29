@@ -11,7 +11,7 @@ variable "subnet_id" {}
 variable "ssh_key" {}
 
 variable "master_count" {
-  default = 3
+  default = 1
 }
 
 variable "master_type" {

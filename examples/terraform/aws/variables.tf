@@ -1,9 +1,9 @@
 variable "cluster_name" {
-  default = "mke"
+  default = "jas-mke-cluster"
 }
 
 variable "aws_region" {
-  default = "eu-central-1"
+  default = "eu-west-1"
 }
 
 variable "aws_shared_credentials_file" {
@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 }
 
 variable "admin_password" {
-  default = "dockeradmin"
+  default = "Passw0rd!"
 }
 
 
@@ -28,15 +28,15 @@ variable "master_count" {
 }
 
 variable "worker_count" {
-  default = 3
+  default = 2
 }
 
 variable "windows_worker_count" {
-  default = 0
+  default = 1
 }
 
 variable "msr_count" {
-  default = 0
+  default = 1
 }
 
 variable "master_type" {
@@ -62,5 +62,5 @@ variable "msr_volume_size" {
   default = 100
 }
 variable "windows_administrator_password" {
-  default = "w!ndozePassw0rd"
+  default = "Passw0rd!"
 }

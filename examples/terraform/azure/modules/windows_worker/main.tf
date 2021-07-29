@@ -23,10 +23,10 @@ resource azurerm_network_security_group "win_worker_nsg" {
   resource_group_name = var.rg
 
   tags = merge(
-    map(
-      "Name", format("%s-win-worker-nsg", var.cluster_name),
-      "Environment", format("%s", var.rg)
-    ),
+    tomap({
+      "Name" = format("%s-win-worker-nsg", var.cluster_name),
+      "Environment" = format("%s", var.rg)
+    }),
     var.tags
   )
 }
@@ -89,10 +89,10 @@ resource "azurerm_network_interface" "netif_public" {
   }
 
   tags = merge(
-    map(
-      "Name", format("%s-win-worker-Net-%s", var.cluster_name, count.index + 1),
-      "Environment", format("%s", var.rg)
-    ),
+    tomap({
+      "Name" = format("%s-win-worker-Net-%s", var.cluster_name, count.index + 1),
+      "Environment" = format("%s", var.rg)
+    }),
     var.tags
   )
 }
@@ -114,10 +114,10 @@ resource "azurerm_public_ip" "win_worker_public_ips" {
   allocation_method   = "Static"
 
   tags = merge(
-    map(
-      "Name", format("%s-win-worker-PublicIP-%d", var.cluster_name, count.index + 1),
-      "Environment", format("%s", var.rg)
-    ),
+    tomap({
+      "Name" = format("%s-win-worker-PublicIP-%d", var.cluster_name, count.index + 1),
+      "Environment" = format("%s", var.rg)
+    }),
     var.tags
   )
 }
@@ -134,10 +134,10 @@ resource "azurerm_availability_set" "win_worker_avset" {
   platform_update_domain_count = var.update_domain_count
   managed                      = true
   tags = merge(
-    map(
-      "Name", format("%s-win-worker-avset", var.cluster_name),
-      "Environment", format("%s", var.rg)
-    ),
+    tomap({
+      "Name" = format("%s-win-worker-avset", var.cluster_name),
+      "Environment" = format("%s", var.rg)
+    }),
     var.tags
   )
 }
@@ -192,21 +192,18 @@ resource "azurerm_virtual_machine" "win_worker" {
     custom_data    = <<EOF
 # Set Administrator password
 ([adsi]("WinNT://./administrator, user")).SetPassword("${local.password}")
-
 # Snippet to enable WinRM over HTTPS with a self-signed certificate
 # from https://gist.github.com/TechIsCool/d65017b8427cfa49d579a6d7b6e03c93
 Write-Output "Disabling WinRM over HTTP..."
 Disable-NetFirewallRule -Name "WINRM-HTTP-In-TCP"
 Disable-NetFirewallRule -Name "WINRM-HTTP-In-TCP-PUBLIC"
 Get-ChildItem WSMan:\Localhost\listener | Remove-Item -Recurse
-
 Write-Output "Configuring WinRM for HTTPS..."
 Set-Item -Path WSMan:\LocalHost\MaxTimeoutms -Value '1800000'
 Set-Item -Path WSMan:\LocalHost\Shell\MaxMemoryPerShellMB -Value '1024'
 Set-Item -Path WSMan:\LocalHost\Service\AllowUnencrypted -Value 'false'
 Set-Item -Path WSMan:\LocalHost\Service\Auth\Basic -Value 'true'
 Set-Item -Path WSMan:\LocalHost\Service\Auth\CredSSP -Value 'true'
-
 New-NetFirewallRule -Name "WINRM-HTTPS-In-TCP" `
     -DisplayName "Windows Remote Management (HTTPS-In)" `
     -Description "Inbound rule for Windows Remote Management via WS-Management. [TCP 5986]" `
@@ -216,7 +213,6 @@ New-NetFirewallRule -Name "WINRM-HTTPS-In-TCP" `
     -LocalPort "5986" `
     -Action Allow `
     -Profile Domain,Private
-
 New-NetFirewallRule -Name "WINRM-HTTPS-In-TCP-PUBLIC" `
     -DisplayName "Windows Remote Management (HTTPS-In)" `
     -Description "Inbound rule for Windows Remote Management via WS-Management. [TCP 5986]" `
@@ -226,14 +222,11 @@ New-NetFirewallRule -Name "WINRM-HTTPS-In-TCP-PUBLIC" `
     -LocalPort "5986" `
     -Action Allow `
     -Profile Public
-
 $Hostname = [System.Net.Dns]::GetHostByName((hostname)).HostName.ToUpper()
 $pfx = New-SelfSignedCertificate -CertstoreLocation Cert:\LocalMachine\My -DnsName $Hostname
 $certThumbprint = $pfx.Thumbprint
 $certSubjectName = $pfx.SubjectName.Name.TrimStart("CN = ").Trim()
-
 New-Item -Path WSMan:\LocalHost\Listener -Address * -Transport HTTPS -Hostname $certSubjectName -CertificateThumbPrint $certThumbprint -Port "5986" -force
-
 Write-Output "Restarting WinRM Service..."
 Stop-Service WinRM
 Set-Service WinRM -StartupType "Automatic"
@@ -247,11 +240,11 @@ EOF
   }
 
   tags = merge(
-    map(
-      "Name", format("%s%03d", "win-worker-", (count.index + 1)),
-      "Environment", format("%s", var.rg),
-      "Role", "worker",
-    ),
+    tomap({
+      "Name" = format("%s%03d", "win-worker-", (count.index + 1)),
+      "Environment" = format("%s", var.rg),
+      "Role" = "worker",
+    }),
     var.tags
   )
 }

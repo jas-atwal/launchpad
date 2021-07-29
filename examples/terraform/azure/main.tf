@@ -105,7 +105,7 @@ locals {
         useHTTPS = true
         insecure = true
       }
-      privateInterface = "Ethernet"
+      privateInterface = "Ethernet 2"
       role             = "worker"
     }
   ]
@@ -119,7 +119,11 @@ locals {
       name = var.cluster_name
     }
     spec = {
+      mcr = {
+         version = "20.10.0"
+      }
       mke = {
+        version =  "3.4.4"
         adminUsername = "admin"
         adminPassword = var.admin_password
         installFlags : [

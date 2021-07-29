@@ -1,0 +1,29 @@
+apiVersion: launchpad.mirantis.com/mke/v1.3
+kind: mke
+metadata:
+  name: jas-mke-cluster
+spec:
+  hosts:
+  - privateInterface: eth0
+    role: manager
+    ssh:
+      address: 20.108.13.122
+      keyPath: ./ssh_keys/jas-mke-cluster.pem
+      user: ubuntu
+  - privateInterface: Ethernet 2
+    role: worker
+    winRM:
+      address: 20.108.13.173
+      insecure: true
+      password: rlQS46h8yIhkvzudmT4!
+      useHTTPS: true
+      user: DockerAdmin
+  mcr:
+    version: 20.10.0
+  mke:
+    version: 3.4.3
+    adminPassword: Passw0rd!
+    adminUsername: admin
+    installFlags:
+    - --default-node-orchestrator=kubernetes
+    - --san=mke-jasmkeclusterrg-ond8.uksouth.cloudapp.azure.com

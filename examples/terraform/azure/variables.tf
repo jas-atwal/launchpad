@@ -1,5 +1,5 @@
 variable "cluster_name" {
-  default = "mke"
+  default = "jas-mke-cluster"
 }
 
 variable "azure_region" {
@@ -23,7 +23,7 @@ variable "address_space" {
 }
 
 variable "admin_password" {
-  default = "orcaorcaorca"
+  default = "Passw0rd!"
 }
 
 variable "master_count" {
@@ -31,11 +31,11 @@ variable "master_count" {
 }
 
 variable "worker_count" {
-  default = 3
+  default = 1
 }
 
 variable "windows_worker_count" {
-  default = 0
+  default = 1
 }
 
 variable "master_type" {
